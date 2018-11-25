@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_request_list"
+          android:icon="@mipmap/ic_request_list"
+          android:title="Requests list"/>
+    <item android:id="@+id/menu_set_up_service"
+          android:icon="@mipmap/ic_set_up_service"
+          android:title="Set-up service"/>
+
+    <item android:id="@+id/menu_rates_of_service"
+          android:icon="@mipmap/ic_rate_service"
+          android:title="Rate of service"/>
+
+    <item android:id="@+id/menu_vendor_page"
+          android:icon="@mipmap/ic_vendor_page"
+          android:title="Vendor's page"/>
+
+    <item android:id="@+id/menu_own_request"
+          android:icon="@mipmap/ic_own_request"
+          android:title="Own requests"/>
+
+    <item android:id="@+id/menu_documents"
+          android:icon="@mipmap/ic_documents"
+          android:title="Documents"/>
+
+    <item android:id="@+id/personal"
+          android:icon="@drawable/ic_action_personal"
+          android:title="Personal"/>
+
+    <item android:id="@+id/address"
+          android:icon="@drawable/ic_action_address"
+          android:title="Address"/>
+
+    <item android:id="@+id/logout"
+          android:icon="@drawable/ic_action_log_out"
+          android:title="Logout"/>
+
+</menu>
