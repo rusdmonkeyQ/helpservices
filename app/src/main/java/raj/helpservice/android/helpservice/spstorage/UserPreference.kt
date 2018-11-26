@@ -3,12 +3,9 @@ package raj.helpservice.android.helpservice.spstorage
 import android.content.Context
 import android.preference.PreferenceManager
 import com.google.gson.Gson
-import raj.helpservice.android.helpservice.data.City
-import raj.helpservice.android.helpservice.data.RegistrationUser
 import com.google.gson.reflect.TypeToken
-import io.fabric.sdk.android.services.network.NetworkUtils
-import raj.helpservice.android.helpservice.data.Language
-import raj.helpservice.android.helpservice.data.Profession
+import raj.helpservice.android.helpservice.NetworkUtils
+import raj.helpservice.android.helpservice.data.*
 
 
 object UserPreference{
@@ -86,10 +83,18 @@ object UserPreference{
     }
     fun getLanguages(): ArrayList<Language>{
         val type = object : TypeToken<ArrayList<Language>>() {}.type
-        val languages: ArrayList<Language> = Gson().fromJson(raj.helpservice.android.helpservice.NetworkUtils.language,type)
-        return languages
+        return Gson().fromJson(NetworkUtils.language,type)
     }
 
+    fun getRateInterval(): ArrayList<RateInterval>{
+        val type = object : TypeToken<ArrayList<RateInterval>>() {}.type
+        return Gson().fromJson(NetworkUtils.serviceTime,type)
+    }
+
+    fun getDocumentModel(): ArrayList<DocumentNameModel>{
+        val type = object : TypeToken<ArrayList<DocumentNameModel>>() {}.type
+        return Gson().fromJson(raj.helpservice.android.helpservice.NetworkUtils.documentType,type)
+    }
 
 
 }

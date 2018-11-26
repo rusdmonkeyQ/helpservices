@@ -85,6 +85,11 @@ interface ApiInterface{
     @GET("/api/values/SingleVendor")
     fun getDetailedInformationVendor(@Query("id") id: String): Deferred<DetailedWorker>
 
+    @GET("/api/vendor/uploadeddocs")
+    fun getDocuments(@Query("Id") id:String): Deferred<ArrayList<DocumentModel>>
+
+
+
 
 
 

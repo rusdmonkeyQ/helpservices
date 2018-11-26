@@ -214,4 +214,13 @@ class Repository {
         return data
     }
 
+    fun getDocuments(id: String): MutableLiveData<ArrayList<DocumentModel>>{
+        val data = MutableLiveData<ArrayList<DocumentModel>>()
+        launch(UI) {
+            val base = webservice?.getDocuments(id)?.await()
+            data.value = base
+        }
+        return data
+    }
+
 }

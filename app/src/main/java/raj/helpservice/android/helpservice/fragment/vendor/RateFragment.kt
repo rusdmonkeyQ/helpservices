@@ -12,6 +12,7 @@ import android.widget.ProgressBar
 import android.widget.Toast
 
 import raj.helpservice.android.helpservice.R
+import raj.helpservice.android.helpservice.activity.VendorActivity
 import raj.helpservice.android.helpservice.adapter.AddedRatesAdapter
 import raj.helpservice.android.helpservice.data.AddedRatesModel
 import raj.helpservice.android.helpservice.spstorage.UserPreference
@@ -33,6 +34,11 @@ class RateFragment : Fragment() ,AddedRatesAdapter.OnItemClickListener{
     lateinit var progressBar: ProgressBar
 
     private lateinit var viewModel: VendorViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -67,15 +73,19 @@ class RateFragment : Fragment() ,AddedRatesAdapter.OnItemClickListener{
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.rate,menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return super.onOptionsItemSelected(item)
+        val vendorActivity = activity!! as VendorActivity
+        vendorActivity.replaceFragment(CreateRateFragment.newInstance())
+        return true
     }
 
     override fun onItemClick(item: AddedRatesModel?, position: Int) {
-
+        val vendorActivity = activity!! as VendorActivity
+        vendorActivity.replaceFragment(CreateRateFragment.newInstance())
     }
 
 

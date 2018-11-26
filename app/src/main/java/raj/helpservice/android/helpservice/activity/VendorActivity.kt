@@ -3,6 +3,8 @@ package raj.helpservice.android.helpservice.activity
 import android.Manifest
 import android.os.Bundle
 import android.app.Activity
+import android.content.Intent
+import android.provider.MediaStore
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.widget.DrawerLayout
@@ -18,6 +20,7 @@ import com.kotlinpermissions.KotlinPermissions
 import raj.helpservice.android.helpservice.R
 
 import kotlinx.android.synthetic.main.activity_vendor.*
+import raj.helpservice.android.helpservice.customviews.FragmentHelper
 import raj.helpservice.android.helpservice.data.City
 import raj.helpservice.android.helpservice.data.Profession
 import raj.helpservice.android.helpservice.fragment.ResultFragment
@@ -25,10 +28,7 @@ import raj.helpservice.android.helpservice.fragment.consumer.AddressFragment
 import raj.helpservice.android.helpservice.fragment.consumer.ConsumerFragment
 import raj.helpservice.android.helpservice.fragment.consumer.CreateRequest
 import raj.helpservice.android.helpservice.fragment.consumer.PersonalFragment
-import raj.helpservice.android.helpservice.fragment.vendor.RateFragment
-import raj.helpservice.android.helpservice.fragment.vendor.RequestListFragment
-import raj.helpservice.android.helpservice.fragment.vendor.SetUpFragment
-import raj.helpservice.android.helpservice.fragment.vendor.VendorFragment
+import raj.helpservice.android.helpservice.fragment.vendor.*
 import raj.helpservice.android.helpservice.spstorage.UserPreference
 
 class VendorActivity : AppCompatActivity() {
@@ -37,6 +37,8 @@ class VendorActivity : AppCompatActivity() {
     lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
     lateinit var navigatioView: NavigationView
     lateinit var progressBar : ProgressBar
+    val RESULT_LOAD_IMAGE = 12
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,6 +92,9 @@ class VendorActivity : AppCompatActivity() {
                 }
                 R.id.menu_documents -> {
                     setActionBarTitle("Documents")
+                    val tag = UploadFragment.javaClass.getSimpleName()
+
+                    replaceFragment(UploadFragment.newInstance())
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.personal -> {
@@ -157,6 +162,27 @@ class VendorActivity : AppCompatActivity() {
     }
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return super.onOptionsItemSelected(item) || actionBarDrawerToggle.onOptionsItemSelected(item)
+    }
+
+    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == RESULT_LOAD_IMAGE && resultCode == Activity.RESULT_OK && null != data) {
+            val selectedImage = data.data
+            val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
+
+            val cursor = contentResolver.query(selectedImage!!, filePathColumn, null, null, null)
+            cursor!!.moveToFirst()
+
+            val columnIndex = cursor.getColumnIndex(filePathColumn[0])
+            val picturePath = cursor.getString(columnIndex)
+            cursor.close()
+
+            val fragment = supportFragmentManager.findFragmentById(R.id.vendor_container) as UploadDocumentFragment
+            if (fragment.isVisible) {
+                fragment.setFilePath(picturePath)
+            }
+        }
     }
 
 }
