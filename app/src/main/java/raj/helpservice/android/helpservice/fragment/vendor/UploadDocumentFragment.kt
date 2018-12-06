@@ -67,6 +67,10 @@ class UploadDocumentFragment : Fragment() {
             val i = Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             activity!!.startActivityForResult(i, 12)
         }
+
+        viewLayout.btn_update.setOnClickListener{
+
+        }
         return  viewLayout
     }
 

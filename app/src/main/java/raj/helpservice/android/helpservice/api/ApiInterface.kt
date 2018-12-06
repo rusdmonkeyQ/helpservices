@@ -88,6 +88,10 @@ interface ApiInterface{
     @GET("/api/vendor/uploadeddocs")
     fun getDocuments(@Query("Id") id:String): Deferred<ArrayList<DocumentModel>>
 
+    @GET("/api/vendor/Languages")
+    fun getLanguages(@Query("Id") id :String ): Deferred<ArrayList<Language>>
+
+
 
 
 

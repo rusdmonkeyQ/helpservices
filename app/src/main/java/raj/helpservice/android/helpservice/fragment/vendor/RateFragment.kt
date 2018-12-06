@@ -79,13 +79,13 @@ class RateFragment : Fragment() ,AddedRatesAdapter.OnItemClickListener{
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val vendorActivity = activity!! as VendorActivity
-        vendorActivity.replaceFragment(CreateRateFragment.newInstance())
+      //  vendorActivity.replaceFragment(CreateRateFragment.newInstance())
         return true
     }
 
     override fun onItemClick(item: AddedRatesModel?, position: Int) {
         val vendorActivity = activity!! as VendorActivity
-        vendorActivity.replaceFragment(CreateRateFragment.newInstance())
+       // vendorActivity.replaceFragment(CreateRateFragment.newInstance())
     }
 
 

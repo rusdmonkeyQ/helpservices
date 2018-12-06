@@ -214,6 +214,15 @@ class Repository {
         return data
     }
 
+    fun getLanguage(id: String): MutableLiveData<ArrayList<Language>>{
+        val data = MutableLiveData<ArrayList<Language>>()
+        launch(UI) {
+            val base = webservice?.getLanguages(id)?.await()
+            data.value = base
+        }
+        return data
+    }
+
     fun getDocuments(id: String): MutableLiveData<ArrayList<DocumentModel>>{
         val data = MutableLiveData<ArrayList<DocumentModel>>()
         launch(UI) {
@@ -222,5 +231,4 @@ class Repository {
         }
         return data
     }
-
 }

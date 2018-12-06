@@ -25,4 +25,6 @@ class VendorViewModel : ViewModel() {
     fun sendLangWorkDesc(vendorSetupModel: VendorLanguageText) = repository.sendLangAndWork(vendorSetupModel)
 
     fun getDocuments(id: String)  = repository.getDocuments(id)
+
+    fun getLanguages(id: String) = repository.getLanguage(id)
 }

@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class VendorLanguageText {
     public String id;
-    @SerializedName("descripion")
+    @SerializedName("description")
     public String description;
     @SerializedName("languageId")
     public String languageId;

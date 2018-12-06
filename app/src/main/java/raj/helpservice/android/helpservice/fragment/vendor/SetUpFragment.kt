@@ -6,6 +6,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.design.widget.TextInputEditText
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -102,6 +103,7 @@ class SetUpFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         downloadSetUpInformation()
+        getLanguages()
 
     }
 
@@ -112,16 +114,6 @@ class SetUpFragment : Fragment() {
             val serviceType = UserPreference.getProfessions(context!!)?.filter { user.serviceTypeId == it.serviceTypeID }?.single()
             serviceText.text = serviceType!!.serviceName
             workDescription.setText(vendorSetUp?.description)
-            val languages = UserPreference.getLanguages()
-            val languageId = vendorSetUp?.languageId?.split("/")
-            val sb = java.lang.StringBuilder()
-            if (languageId != null) {
-                for (language in languageId){
-                    sb.append(languages[language.toInt()])
-                    sb.append(" ")
-                }
-                language.text = sb.toString()
-            }
             progressBar.visibility = View.GONE
 
 
@@ -130,21 +122,36 @@ class SetUpFragment : Fragment() {
     }
 
     fun sendSetUpToServer(){
+        progressBar.visibility = View.VISIBLE
         val user= UserPreference.getUser(context!!)
         vendorSetupModel = VendorLanguageText()
         vendorSetupModel?.description = workDescription.text.toString()
         if (selectedIndex.size == 0){
-            Toast.makeText(context,"Please choose language ",Toast.LENGTH_SHORT).show()
+            Toast.makeText(context,"Please choose new languages",Toast.LENGTH_SHORT).show()
             return
         }
         vendorSetupModel?.languageId = selectedIndex.map { it+1 }.joinToString("/")
         vendorSetupModel?.id = user?.userID
         viewModel.sendLangWorkDesc(vendorSetupModel!!).observe(this, Observer {
             when {
-                it?.isSuccess()== true -> downloadSetUpInformation()
+                it?.isSuccess()== true -> {
+                    downloadSetUpInformation()
+                    getLanguages()
+                }
                 it?.isSuccess()== false -> Toast.makeText(context,"Not closed", Toast.LENGTH_SHORT).show()
                 it?.getResponseStatus() !=  "Success" -> Toast.makeText(context,it?.getErrorMessage(), Toast.LENGTH_SHORT).show()
             }
+            progressBar.visibility = View.GONE
+        })
+    }
+
+    fun getLanguages(){
+        progressBar.visibility = View.VISIBLE
+        val user  = UserPreference.getUser(context!!)
+        viewModel.getLanguages(user?.userID!!).observe(this, Observer { languages->
+            val selectedLanguage = languages?.filter { it.selected == "Y" }?.map { it.name }!!.joinToString()
+            language.text = selectedLanguage
+            progressBar.visibility = View.GONE
         })
     }
 
