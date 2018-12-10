@@ -33,11 +33,15 @@ import java.util.*
 import android.location.LocationListener
 import android.text.method.TextKeyListener.clear
 import android.location.LocationManager
+import android.support.annotation.NonNull
 import android.support.design.widget.Snackbar
+import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GooglePlayServicesUtil
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
 import com.kotlinpermissions.KotlinPermissions
 
 
@@ -86,10 +90,20 @@ class AddressFragment : Fragment() {
     var isConsumer = true
     private var mGoogleMap: GoogleMap? = null
     private var mLocationManager: LocationManager? = null
+    private var mLastKnownLocation: Location? = null
+
 
     val LOCATION_UPDATE_MIN_DISTANCE = 50.toFloat()
     val LOCATION_UPDATE_MIN_TIME = 9000.toLong()
+    private val mDefaultLocation = LatLng(-33.8523341, 151.2106085)
+
+    private val mLikelyPlaceNames: Array<String>? = null
+    private val mLikelyPlaceAddresses: Array<String>? = null
+    private val mLikelyPlaceAttributions: Array<String>? = null
+    private val mLikelyPlaceLatLngs: Array<LatLng>? = null
+
     var editable = false
+
 
 
     private val mLocationListener = object : LocationListener {
@@ -144,6 +158,8 @@ class AddressFragment : Fragment() {
             param2 = it.getString(ARG_PARAM2)
         }
         setHasOptionsMenu(true)
+
+        // Construct a GeoDataClient.
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -170,6 +186,7 @@ class AddressFragment : Fragment() {
         area = view.findViewById(R.id.area_adress)
         saveButton  = view.findViewById(R.id.save_button)
         cancelButton = view.findViewById(R.id.cancel_button)
+
         if (isConsumer)
         progressBar = activity?.findViewById<ProgressBar>(R.id.consumer_progress)!!
         else
@@ -240,45 +257,59 @@ class AddressFragment : Fragment() {
         }
 
 
+
         mapView.getMapAsync { mMap ->
             mGoogleMap = mMap
             initMap()
-           getCurrentLocation()
-            // For showing a move to my location button
+            getCurrentLocation()
+            // Prompt the user for permission.
 
-            // For dropping a marker at a point on the Map
-//            val sydney = LatLng(12.95 ,77.59)
-//           // googleMap.addMarker(MarkerOptions().position(sydney).title("Marker Title").snippet("Marker Description"))
-//
-//            // For zooming automatically to the location of the marker
-//            val cameraPosition = CameraPosition.Builder().target(sydney).zoom(12f).build()
-//            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
-//            googleMap.setOnMapClickListener {
-//                googleMap.clear()
-//                latitude = it?.latitude.toString()
-//                longitute = it?.longitude.toString()
-//                val marker = MarkerOptions().position(
-//                        LatLng(it.latitude, it.longitude)).title("New Adress Setted")
-//                googleMap.addMarker(marker)
-//                val addresses = getCoder.getFromLocation(it.latitude,it.longitude,1)
-//                val address:String? = addresses.get(0).getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-//                fullAdress.setText(address)
-//                val city:String? = addresses.get(0).getLocality()
-//                val state:String? =addresses.get(0).getAdminArea()
-//                val country:String?= addresses.get(0).getCountryName()
-//                val postalCode:String?= addresses.get(0).getPostalCode()
-//                pincode.setText(postalCode)
-//                val knownName:String?= addresses.get(0).getFeatureName()
-//                val areaS:String? = addresses[0].subAdminArea
-//                area.setText("State ${state} area ${areaS}")
-            //    Toast.makeText(context,"Latitude ${address} Longitute ${country}:: $${city}",Toast.LENGTH_LONG ).show()
+
+      //      getLocationPermission()
+
+            // Turn on the My Location layer and the related control on the map.
+         //   updateLocationUI()
+
+            // Get the current location of the device and set the position of the map.
+         //   getCurrentLocation()
+        //    getDeviceLocation()
             }
-//            googleMap.setMyLocationEnabled(true)
 
 
 
 
         return view
+    }
+
+    private val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: Int = 12
+
+    private fun getLocationPermission() {
+    /*
+     * Request location permission, so that we can get the location of the
+     * device. The result of the permission request is handled by a callback,
+     * onRequestPermissionsResult.
+     */
+    if (ContextCompat.checkSelfPermission(context!!.applicationContext,
+            android.Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED) {
+        mLocationPermissionGranted = true;
+    } else {
+        ActivityCompat.requestPermissions(activity!!,
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+    }
+
+}
+
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when(requestCode) {
+            PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION ->{
+                if (grantResults.isNotEmpty() && grantResults[0]==PackageManager.PERMISSION_GRANTED)
+                    mLocationPermissionGranted = true
+            }
+        }
+        updateLocationUI()
     }
 
 
@@ -367,6 +398,53 @@ class AddressFragment : Fragment() {
 		}
 	}
 
+    private var mLocationPermissionGranted: Boolean = false
+
+    private fun updateLocationUI() {
+        if (mGoogleMap == null) {
+            return
+        }
+        try {
+            if (mLocationPermissionGranted) {
+                mGoogleMap?.setMyLocationEnabled(true)
+                mGoogleMap?.getUiSettings()?.setMyLocationButtonEnabled(true)
+            } else {
+                mGoogleMap?.setMyLocationEnabled(false)
+                mGoogleMap?.getUiSettings()?.setMyLocationButtonEnabled(false)
+                mLastKnownLocation = null
+                getLocationPermission()
+            }
+        } catch (e: SecurityException) {
+            Log.e("Exception: %s", e.message)
+        }
+
+    }
+//    private fun getDeviceLocation() {
+//        /*
+//         * Get the best and most recent location of the device, which may be null in rare
+//         * cases when a location is not available.
+//         */
+//        try {
+//            if (mLocationPermissionGranted){
+//                val locationResult = mFusedLocationProviderClient!!.lastLocation
+//                locationResult.addOnCompleteListener(activity!!) {task ->
+//                    if (task.isSuccessful){
+//                        mLastKnownLocation = task.result
+//                        mGoogleMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(mLastKnownLocation!!.latitude, mLastKnownLocation!!.longitude),15f))
+//         //
+//                    }
+//                    else {
+//                        mGoogleMap!!.moveCamera(CameraUpdateFactory
+//                                .newLatLngZoom(mDefaultLocation, 15f));
+//                        mGoogleMap!!.getUiSettings().setMyLocationButtonEnabled(false);
+//                    }
+//                }
+//            }
+//        }catch (e:SecurityException){
+//
+//        }
+//    }
+
 //    override fun onAttach(context: Context) {
 //        super.onAttach(context)
 //        if (context is OnFragmentInteractionListener) {
@@ -420,6 +498,7 @@ class AddressFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         mapView.onResume()
+        updateLocationUI()
         getCurrentLocation()
     }
 
@@ -452,32 +531,35 @@ class AddressFragment : Fragment() {
 
 	}
 
-   @SuppressLint("MissingPermission")
-   fun getCurrentLocation() {
-        val isGPSEnabled = mLocationManager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)
-        val isNetworkEnabled = mLocationManager!!.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
 
-        var location: Location? = null
-        if (!(isGPSEnabled || isNetworkEnabled))
-            Snackbar.make(mapView, "GPS not enabled", Snackbar.LENGTH_LONG).show()
-        else {
-            if (isNetworkEnabled) {
-                mLocationManager!!.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-                        LOCATION_UPDATE_MIN_TIME, LOCATION_UPDATE_MIN_DISTANCE, mLocationListener)
-                location = mLocationManager!!.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-            }
+    @SuppressLint("MissingPermission")
+   private fun getCurrentLocation() {
+       if (mLocationPermissionGranted) {
+           val isGPSEnabled = mLocationManager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)
+           val isNetworkEnabled = mLocationManager!!.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
 
-            if (isGPSEnabled) {
-                mLocationManager!!.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                        LOCATION_UPDATE_MIN_TIME, LOCATION_UPDATE_MIN_DISTANCE, mLocationListener)
-                location = mLocationManager!!.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-            }
-        }
-        if (location != null) {
-            Log.e("TAG",location.toString())
-            drawMarker(location)
-            setInEditText(location)
-        }
-    }
+           var location: Location? = null
+           if (!(isGPSEnabled || isNetworkEnabled))
+               Snackbar.make(mapView, "GPS not enabled", Snackbar.LENGTH_LONG).show()
+           else {
+               if (isNetworkEnabled) {
+                   mLocationManager!!.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                           LOCATION_UPDATE_MIN_TIME, LOCATION_UPDATE_MIN_DISTANCE, mLocationListener)
+                   location = mLocationManager!!.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+               }
+
+               if (isGPSEnabled) {
+                   mLocationManager!!.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                           LOCATION_UPDATE_MIN_TIME, LOCATION_UPDATE_MIN_DISTANCE, mLocationListener)
+                   location = mLocationManager!!.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+               }
+           }
+           if (location != null) {
+               Log.e("TAG", location.toString())
+               drawMarker(location)
+               setInEditText(location)
+           }
+       }
+   }
 
 }

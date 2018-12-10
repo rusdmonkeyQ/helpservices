@@ -15,7 +15,7 @@ public class DocumentNameModel {
     @SerializedName("name")
     public String name;
     @SerializedName("selected")
-    private String selected;
+    public String selected;
 
     public boolean isSelected() {
         if (selected == null || !selected.equalsIgnoreCase(SELECTED_YES)) {

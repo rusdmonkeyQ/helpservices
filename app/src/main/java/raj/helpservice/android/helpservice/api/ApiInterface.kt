@@ -91,10 +91,10 @@ interface ApiInterface{
     @GET("/api/vendor/Languages")
     fun getLanguages(@Query("Id") id :String ): Deferred<ArrayList<Language>>
 
+    @POST("/api/vendor/closerate")
+    fun closeRate(@Query("ServiceId") serviceId:String): Deferred<Void>
 
-
-
-
-
+    @POST(" /api/vendor/UploadDoc")
+    fun uploadDocument(@Body uploadDocument: UploadDocument): Deferred<BaseResponse>
 
 }

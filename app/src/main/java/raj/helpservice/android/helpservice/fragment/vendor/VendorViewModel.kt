@@ -2,6 +2,8 @@ package raj.helpservice.android.helpservice.fragment.vendor
 
 import android.arch.lifecycle.ViewModel;
 import raj.helpservice.android.helpservice.Repository
+import raj.helpservice.android.helpservice.data.DocumentNameModel
+import raj.helpservice.android.helpservice.data.UploadDocument
 import raj.helpservice.android.helpservice.data.VendorLanguageText
 import raj.helpservice.android.helpservice.data.VendorSetupModel
 
@@ -27,4 +29,8 @@ class VendorViewModel : ViewModel() {
     fun getDocuments(id: String)  = repository.getDocuments(id)
 
     fun getLanguages(id: String) = repository.getLanguage(id)
+
+    fun closeRate(serviceId:String) = repository.closeRate(serviceId)
+
+    fun uploadDocument(uploadDocument: UploadDocument) = repository.uploadImage(uploadDocument)
 }

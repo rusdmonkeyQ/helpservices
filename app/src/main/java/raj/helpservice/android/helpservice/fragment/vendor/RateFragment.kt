@@ -27,6 +27,10 @@ private const val ARG_PARAM2 = "param2"
  *
  */
 class RateFragment : Fragment() ,AddedRatesAdapter.OnItemClickListener{
+    override fun onRemoveClick(item: AddedRatesModel?, position: Int) {
+        viewModel.closeRate(item!!.serviceID)
+        downloadRateInformation()
+    }
 
 
     lateinit var recyclerRates : RecyclerView
@@ -79,13 +83,13 @@ class RateFragment : Fragment() ,AddedRatesAdapter.OnItemClickListener{
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val vendorActivity = activity!! as VendorActivity
-      //  vendorActivity.replaceFragment(CreateRateFragment.newInstance())
+        vendorActivity.replaceFragment(CreateRateFragment())
         return true
     }
 
     override fun onItemClick(item: AddedRatesModel?, position: Int) {
         val vendorActivity = activity!! as VendorActivity
-       // vendorActivity.replaceFragment(CreateRateFragment.newInstance())
+        vendorActivity.replaceFragment(CreateRateFragment.newInstance(item!!))
     }
 
 

@@ -231,4 +231,22 @@ class Repository {
         }
         return data
     }
+
+    fun closeRate(servieId:String){
+        launch(UI){
+            webservice?.closeRate(servieId)?.await()
+        }
+    }
+
+    fun uploadImage(uploadDocument: UploadDocument):MutableLiveData<BaseResponse>{
+        val data = MutableLiveData<BaseResponse>()
+        launch(UI) {
+            val base = webservice?.uploadDocument(uploadDocument)?.await()
+            data.value  = base
+        }
+        return data
+    }
+
+
+
 }

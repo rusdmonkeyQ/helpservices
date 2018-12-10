@@ -21,4 +21,6 @@ public class VendorSetupModel {
     public String languageId;
     @SerializedName("serviceTypeID")
     public String serviceTypeID;
+    @SerializedName("SetPrimary")
+    public String setPrimary;
 }

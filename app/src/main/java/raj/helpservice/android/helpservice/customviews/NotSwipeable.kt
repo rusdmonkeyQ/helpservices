@@ -8,7 +8,6 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import kotlin.text.Charsets
-import com.google.android.gms.common.util.IOUtils.toByteArray
 import java.io.ByteArrayOutputStream
 import java.io.PrintWriter
 

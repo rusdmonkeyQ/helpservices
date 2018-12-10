@@ -20,9 +20,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/logo_person"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/logo_person"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
@@ -42,9 +42,7 @@
             android:name=".activity.RegisterActivity"
             android:screenOrientation="portrait">
         </activity>
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key"/>
+
         <activity
             android:name=".activity.DetailActivity"
             android:label="@string/title_activity_detail"
@@ -59,6 +57,10 @@
             android:label="@string/title_activity_vendor">
 
         </activity>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key"/>
+
 
         <meta-data
             android:name="io.fabric.ApiKey"

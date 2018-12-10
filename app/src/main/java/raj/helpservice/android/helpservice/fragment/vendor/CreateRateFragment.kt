@@ -13,6 +13,7 @@ import android.widget.Toast
 
 import raj.helpservice.android.helpservice.R
 import kotlinx.android.synthetic.main.create_rate_fragment.view.*
+import raj.helpservice.android.helpservice.data.AddedRatesModel
 import raj.helpservice.android.helpservice.data.RateInterval
 import raj.helpservice.android.helpservice.data.VendorLanguageText
 import raj.helpservice.android.helpservice.data.VendorSetupModel
@@ -55,6 +56,14 @@ class CreateRateFragment : Fragment() {
             ViewModelProviders.of(this).get(VendorViewModel::class.java)
         } ?: throw Exception("Invalid Activity")
         viewOfLayout = inflater.inflate(R.layout.create_rate_fragment, container, false)
+
+        if (arguments?.getSerializable("Added_Rates")!= null){
+            val addedRatesModel = arguments?.getSerializable("Added_Rates") as AddedRatesModel
+            viewOfLayout.rate_request.setText(addedRatesModel.serviceRate)
+            viewOfLayout.service_charges.setText(addedRatesModel.serviceCharges)
+            viewOfLayout.discount_amount.setText(addedRatesModel.discountAmount)
+
+        }
         viewOfLayout.spinner_rate_interval.attachDataSource(UserPreference.getRateInterval().map { it.serviceName })
         viewOfLayout.spinner_rate_interval.setOnItemSelectedListener(object : AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -69,6 +78,7 @@ class CreateRateFragment : Fragment() {
             }
 
         })
+
 
         viewOfLayout.cancel_button.setOnClickListener{
             activity!!.supportFragmentManager.popBackStackImmediate()
@@ -92,7 +102,17 @@ class CreateRateFragment : Fragment() {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance() = CreateRateFragment()
+        fun newInstance(addedRatesModel: AddedRatesModel): CreateRateFragment{
+            val rateFragment = CreateRateFragment()
+            val bundle = Bundle()
+            bundle.apply {
+                this.putSerializable("Added_Rates",addedRatesModel)
+            }
+            rateFragment.arguments = bundle
+            return rateFragment
+
+        }
+
     }
 
 
@@ -103,10 +123,21 @@ class CreateRateFragment : Fragment() {
         vendorSetupModel.serviceRate = viewOfLayout.rate_request.text.toString()
         vendorSetupModel.serviceCharges = viewOfLayout.service_charges.text.toString()
         vendorSetupModel.discountAmmount = viewOfLayout.discount_amount.text.toString()
+        vendorSetupModel.description = ""
+        vendorSetupModel.languageId =""
+        vendorSetupModel.rateServiceMasterID = choosenRateInterval.serviceMasterID.toString()
+        vendorSetupModel.setPrimary = "1"
+        var serviceTypeId = "2"
+        if (viewOfLayout.contract_checkbox.isChecked && viewOfLayout.labour_checkbox.isChecked)
+            serviceTypeId = "3"
+        else if (viewOfLayout.contract_checkbox.isChecked && !viewOfLayout.labour_checkbox.isChecked){
+            serviceTypeId = "1"
+        }
+        vendorSetupModel.serviceTypeID = serviceTypeId
 
         viewModel.sendDataToServer(vendorSetupModel).observe(this, Observer {
             when {
-                it?.isSuccess()== true -> {            activity!!.supportFragmentManager.popBackStackImmediate() }
+                it?.isSuccess()== true -> {         activity!!.supportFragmentManager.popBackStackImmediate() }
                 it?.isSuccess()== false -> Toast.makeText(context,"Not closed", Toast.LENGTH_SHORT).show()
                 it?.getResponseStatus() !=  "Success" -> Toast.makeText(context,it?.getErrorMessage(), Toast.LENGTH_SHORT).show()
             }

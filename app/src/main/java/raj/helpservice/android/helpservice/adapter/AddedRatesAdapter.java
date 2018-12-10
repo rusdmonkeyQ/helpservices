@@ -28,6 +28,7 @@ public class AddedRatesAdapter extends RecyclerView.Adapter<AddedRatesAdapter.Vi
 	private OnItemClickListener mClickListener;
 	public interface OnItemClickListener {
 		void onItemClick(AddedRatesModel item, int position);
+		void onRemoveClick(AddedRatesModel item, int position);
 	}
 
 	public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -59,8 +60,7 @@ public class AddedRatesAdapter extends RecyclerView.Adapter<AddedRatesAdapter.Vi
 						case R.id.edit_pop_up:
 							mClickListener.onItemClick(mDataset.get(getAdapterPosition()),getAdapterPosition());
 						case R.id.remove_pop_up:
-							mDataset.remove(getAdapterPosition());
-							notifyDataSetChanged();
+							mClickListener.onRemoveClick(mDataset.get(getAdapterPosition()),getAdapterPosition());
 							return true;
 						default:
 							return false;
@@ -93,7 +93,7 @@ public class AddedRatesAdapter extends RecyclerView.Adapter<AddedRatesAdapter.Vi
 	public void onBindViewHolder(ViewHolder holder, final int position) {
 		final AddedRatesModel item = mDataset.get(position);
 		holder.serviceCharges.setText("Service charges: "+item.serviceCharges);
-		holder.serviceTime.setText("Servite time: " +item.serviceName);
+		holder.serviceTime.setText("Service time: " +item.serviceName);
 		holder.serviceRate.setText("Rate: "+item.serviceRate);
 		holder.serviceType.setText(item.serviceType);
 		holder.discountAmount.setText("Discount amount: "+item.discountAmount);
